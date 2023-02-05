@@ -74,7 +74,7 @@ Responses should have the same message ID as requests.
 Make the pointer go forward the length set in CDV. If the payload contains junk bytes, this command can be used to skip over these junk bytes.
 
 #### `4`: Send
-Send a message from payload, with length set in CDV.
+Send a message from payload, with length set in CDV. A length of `0` effectively means a keep-alive request.
 
 #### `5`: Acknowledge
 Acknowledge a sent message. CDV indicates nothing.

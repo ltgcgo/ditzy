@@ -14,11 +14,14 @@ let handler = async function (request, connInfo) {
 		const {socket, response} = Deno.upgradeWebSocket(request);
 		socket.binaryType = "arraybuffer";
 		socket.addEventListener("open", () => {
-			socket.send("Repeater hello.");
+			console.info(`Repeater connected.`);
 		});
 		socket.addEventListener("message", (msg) => {
 			socket.send(msg.data);
 			console.info(`Repeated ${msg.data.length} bytes.`);
+		});
+		socket.addEventListener("close", () => {
+			console.info(`Repeater closed.`);
 		});
 		return response;
 	} else {
