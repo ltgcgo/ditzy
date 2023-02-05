@@ -55,7 +55,7 @@ Each Ditzy message is structured like follows. As such, Ditzy messages can be st
 #### `0`: New connection
 Creates a new connection. Will return an error if said connection already exists.
 
-CDV indicates nothing.
+Timeout (in milliseconds) can be set in CDV.
 
 #### `1`: Close connection
 Closes a connection, or used as a way to send error messages.
@@ -72,6 +72,8 @@ Responses should have the same message ID as requests.
 
 #### `3`: Jump
 Make the pointer go forward the length set in CDV. If the payload contains junk bytes, this command can be used to skip over these junk bytes.
+
+A length of `0` effectively means a keep-alive request.
 
 #### `4`: Send
 Send a message from payload, with length set in CDV. A length of `0` effectively means a keep-alive request.

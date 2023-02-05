@@ -66,7 +66,7 @@ let VLVEncoder = class {
 			throw RangeError("Cannot be negative values");
 		};
 		let bitLimit = (1 << this.bits) - 1,
-		byteSeq = new Uint8Array(Math.floor(Math.log2(integer) / this.bits + 1));
+		byteSeq = new Uint8Array(Math.max(Math.floor(Math.log2(integer) / this.bits + 1), 1));
 		for (let shift = 0; shift < byteSeq.length; shift ++) {
 			let target = byteSeq.length - 1 - shift,
 			baseVal = bitLimit + 1;
