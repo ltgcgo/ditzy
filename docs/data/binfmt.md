@@ -30,7 +30,7 @@ Each Ditzy message is structured like follows. As such, Ditzy messages can be st
 | ------ | ----- | ----------- |
 | (any)  | (any) | Any data of any length, as long as they do not contain the start byte sequence. |
 | 5 | `0xf0 7e 7f 04 40` | The start sequence of Ditzy payload. |
-| ≥3 | (see below) | Control messages. A single control message takes at least 3 bytes. |
+| ≥4 | (see below) | Control messages. A single control message takes at least 4 bytes. |
 | 1 | `0xf7` | SysEx, End of Exclusive. |
 | (any) | (any) | Payload data. |
 
@@ -49,5 +49,38 @@ Each Ditzy message is structured like follows. As such, Ditzy messages can be st
 | 1 | (see below) | Command. |
 | (variable) | (6-bit VLV) | Connection ID, usually selected between 0 and 2<sup>48</sup> - 1. |
 | (variable) | (6-bit VLV) | Command dependent value. |
+| (variable) | (6-bit VLV) | Message ID, usually iterated between 0 and 2<sup>24</sup> - 1. |
 
-#### Command
+### Command
+#### `0`: New connection
+Creates a new connection. Will return an error if said connection already exists.
+
+CDV indicates nothing.
+
+#### `1`: Close connection
+Closes a connection, or used as a way to send error messages.
+
+When CDV is `0`, no error messages are sent. Anything greater than `0` is the length of an error message.
+
+#### `2`: Test connection
+Tests a connection. CDV indicates a test type.
+
+Responses should have the same message ID as requests.
+
+##### Types
+* `0`: Latency test.
+
+#### `3`: Jump
+Make the pointer go forward the length set in CDV. If the payload contains junk bytes, this command can be used to skip over these junk bytes.
+
+#### `4`: Send
+Send a message from payload, with length set in CDV.
+
+#### `5`: Acknowledge
+Acknowledge a sent message. CDV indicates nothing.
+
+#### `6`: Enable feature
+Try enabling a feature, with details set in payload, and CDV indicating its length.
+
+#### `7`: Disable feature
+Try disabling a feature, with details set in payload, and CDV indicating its length.
