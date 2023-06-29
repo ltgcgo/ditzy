@@ -5,4 +5,4 @@ This project is inspired by the [Tor Meek pluggable transport](https://gitweb.to
 
 The name "Ditzy" is a reference to _Ditzy Doo_, _Derpy Hooves_ or _Muffins_.
 
-[Read the documentation](docs/README.md).
+[Read the documentation](https://kb.ltgc.cc/ditzy/).

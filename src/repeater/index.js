@@ -25,7 +25,7 @@ let handler = async function (request, connInfo) {
 		});
 		return response;
 	} else {
-		return new Response(`<!DOCTYPE html><head><style>html{background:#000}</style><script>self.ws=new WebSocket("ws://127.0.0.1:${serveOpt.port}");ws.addEventListener("close",()=>{setTimeout(()=>{location.reload()},4000)})</script></head><body></body>`, {
+		return new Response(`<!DOCTYPE html><head><style>html{background:#000}</style><script>self.ws=new WebSocket("ws://127.0.0.1:${serveOpt.port}");ws.addEventListener("close",()=>{setTimeout(()=>{location.reload()},4000)});ws.addEventListener("message",console.debug)</script></head><body></body>`, {
 				headers: {
 					"content-type": "text/html"
 				}, status: 200
