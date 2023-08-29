@@ -4,11 +4,14 @@ import ChokerStream from "../shaper/choker.mjs";
 
 // DitzyMeek client should directly operate on web streams
 
-let DitzyMeek = class extends EventTarget {
-	CONNECTING = 0;
-	OPEN = 1;
-	CLOSING = 2;
-	CLOSED = 3;
+let utf8Encode = new TextEncoder(),
+utf8Decode = new TextDecoder("utf-8", {fatal: true});
+
+let DitzyHTTP = class extends EventTarget {
+	CONNECTING = 0; // Queue data
+	OPEN = 1; // Send and queue data
+	CLOSING = 2; // Rejects sending
+	CLOSED = 3; // Rejects sending
 	PROFILE_REALTIME = {
 		realtime: true
 	}; // Just send the fuck out as soon as there are something. High priority.
@@ -32,7 +35,9 @@ let DitzyMeek = class extends EventTarget {
 	#headers;
 	#redirect;
 	#readyState = 0;
-	binaryType = "text"; // "text" or "binary" (Uint8Array)
+	#dataQueue = [];
+	#activeRequest;
+	binaryType = "text"; // "text" (UTF-8) or "binary" (Uint8Array). "text" will return String if UTF-8 decoding succeeds, or else directly Uint8Array.
 	get readyState() {
 		return this.#readyState;
 	};
@@ -42,8 +47,50 @@ let DitzyMeek = class extends EventTarget {
 	get bufferedAmount() {
 		return 0;
 	};
-	close() {};
-	send() {};
+	#trueClose(payload) {};
+	#scheduleData(data) {};
+	close(payload = "NoError") {
+		// String only
+		this.#scheduleData([0, utf8Encode.encode(payload)]);
+		this.#readyState = this.CLOSING;
+	};
+	send(data) {
+		if (this.#readyState >> 1) {
+			throw(new Error(`Cannot send data through a closed connection.`));
+		};
+		// Normalize into Uint8Array before sending
+		switch (data.constructor) {
+			case Uint8Array: {
+				break;
+			};
+			case Int8Array:
+			case Uint8ClampedArray:
+			case Int16Array:
+			case Uint16Array:
+			case Int32Array:
+			case Uint32Array:
+			case Float32Array:
+			case Float64Array:
+			case BigInt64Array:
+			case BigUint64Array:
+			case ArrayBuffer: {
+				data = new Uint8Array(data);
+				break;
+			};
+			case Blob: {
+				throw(new TypeError(`Blobs cannot be sent via Ditzy directly. Read as ArrayBuffer first.`));
+				break;
+			};
+			case String: {
+				data = utf8Encode.encode(data);
+				break;
+			};
+			default: {
+				throw(new TypeError(`Unrecognized data.`));
+			};
+		};
+		this.#scheduleData([4, data]);
+	};
 	constructor(url = "", options = {}) {
 		// headers and redirect behaves the same as fetch headers
 		// timeSync extension is a work in progress.
@@ -61,4 +108,8 @@ let DitzyMeek = class extends EventTarget {
 		upThis.#maxSize = profile.maxSize;
 		upThis.#url = url;
 	};
+};
+
+export {
+	DitzyHTTP
 };
