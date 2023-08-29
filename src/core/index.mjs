@@ -64,7 +64,11 @@ let DitzyHTTP = class extends EventTarget {
 		return this.#url;
 	};
 	get bufferedAmount() {
-		return 0;
+		let sum = 0;
+		this.#dataQueue.forEach((e) => {
+			sum += e.byteLength;
+		});
+		return sum;
 	};
 	async #swapRequest() {
 		let upThis = this;
