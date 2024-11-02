@@ -1,5 +1,9 @@
 "use strict";
 
+import {
+	StreamQueue
+} from "../../libs/rochelle/splicer.mjs";
+
 const u8Enc = new TextEncoder();
 const connectBanner = u8Enc.encode("Server accepted!\n");
 const stdoutWriter = Deno.stdout.writable.getWriter();
